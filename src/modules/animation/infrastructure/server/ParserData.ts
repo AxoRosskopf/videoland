@@ -1,38 +1,3 @@
-import fs from "fs";
-import path from "path";
-
-export type FrameData = {
-    WIDTH: number,
-    HEIGHT: number,
-    FRAMES_COUNT: number,
-    FRAMES_DATA: string[],
-}
-
-
-
-/** 
- * @param dir Input a .c file exported from Piskel
- * @returns A FrameData object containing width, height, frame count, and frame data URLs
-**/
-
-export function process_frame(dir: string): FrameData | undefined {
-    try {
-        const data = fs.readFileSync(dir, 'utf8');
-        const baseName = path.basename(dir, '.c');
-
-        return {
-            WIDTH: get_width(data, baseName.toUpperCase()),
-            HEIGHT: get_height(data, baseName.toUpperCase()),
-            FRAMES_COUNT: get_frames_count(data, baseName.toUpperCase()),
-            FRAMES_DATA: get_frames(data, baseName.toLowerCase()),
-        };
-
-    } catch (err) {
-        console.error(err);
-        return undefined;
-    }
-}
-
 const get_width = (data: string, name: string): number => {
     const width_match = data.match(new RegExp(`#define ${name}_FRAME_WIDTH (\\d+)`));
     if (width_match) {
@@ -60,7 +25,6 @@ const get_frames_count = (data: string, name: string): number => {
 const get_frames = (data:string, name: string): string[] => {
     const frames_data_match = data.match(new RegExp(`static const uint32_t ${name}_data\\[(\\d+)\\]\\[(\\d+)\\] = \\{([\\s\\S]*?)\\};`, 'm'));
     if (frames_data_match) {
-        const framesCount = parseInt(frames_data_match[1], 10);
         const pixelsPerFrame = parseInt(frames_data_match[2], 10);
         const framesDataRaw = frames_data_match[3].trim();
 
@@ -96,4 +60,11 @@ const parseHexToRGBA = (hex: string) => {
         b: (num >> 16) & 0xFF,
         a: (num >> 24) & 0xFF, // All data has FF alpha, but just in case
     }
+}
+
+export {
+    get_width,
+    get_height,
+    get_frames_count,
+    get_frames
 }
