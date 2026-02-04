@@ -23,28 +23,47 @@ function renderToSVG(data: string, width: number, height: number){
     return canvas.toDataURL("image/png");
 }
 
+export type FramesCollection = {
+    PASIVE : FrameData,
+    HOVER : FrameData
+}
 
-const useFrames = (FileName : string) =>{
-    const [frames, setFrames] = useState<FrameData | undefined>(undefined);
-    const [loading, setLoading] = useState<boolean>(true);
+const useFrames = (FileName : string, hover: boolean = false) =>{
+    const [frames, setFrames] = useState<FramesCollection | undefined>(undefined);
     useEffect(() => {
-    fetch(`/api/frames?file=${FileName}`)
-      .then(res => {
-        return res.json();
-      })
-      .then(data => {
-        setFrames({
-            WIDTH: data.WIDTH,
-            HEIGHT: data.HEIGHT,
-            FRAMES_COUNT: data.FRAMES_COUNT,
-            FRAMES_DATA: data.FRAMES_DATA.map((frameBase64: string) => renderToSVG(frameBase64, data.WIDTH, data.HEIGHT))   
+        Promise.all([
+            fetch(`/api/frames?file=${FileName}`).then(res => res.json()),  
+            hover ? fetch(`/api/frames?file=${FileName}Hover`).then(res => res.json()) 
+            : Promise.resolve(null)  
+        ])
+        .then(([passiveData, hoverData]) => {
+            setFrames({
+                PASIVE: {
+                    WIDTH: passiveData.WIDTH,
+                    HEIGHT: passiveData.HEIGHT,
+                    FRAMES_COUNT: passiveData.FRAMES_COUNT,
+                    FRAMES_DATA: passiveData.FRAMES_DATA.map((f: string) => renderToSVG(f, passiveData.WIDTH, passiveData.HEIGHT))
+                },
+                HOVER: hoverData ? {
+                    WIDTH: hoverData.WIDTH,
+                    HEIGHT: hoverData.HEIGHT,
+                    FRAMES_COUNT: hoverData.FRAMES_COUNT,
+                    FRAMES_DATA: hoverData.FRAMES_DATA.map((f: string) => renderToSVG(f, hoverData.WIDTH, hoverData.HEIGHT))
+                } : {
+                    WIDTH: 0,
+                    HEIGHT: 0,
+                    FRAMES_COUNT: 0,
+                    FRAMES_DATA: []
+                }
+            });
         })
-      })
-      .catch(err => console.error("Error :", err))
-      .finally(() => setLoading(false));
-  }, [FileName]);
+        .catch(err => {
+            console.error("Error loading frames:", err);
+            setFrames(undefined);
+        })
+    }, [FileName]);
 
-  return { frames, loading };
+    return { frames };
 }
 
 export default useFrames;

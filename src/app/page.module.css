@@ -10,5 +10,13 @@
     background-image: var(--tarantino);
     background-size: contain;
     background-repeat: no-repeat;
+    image-rendering: pixelated;
+    transition: all 0.1s ease-in;
+    cursor: pointer;
+}
+
+.tarantino:hover{
+    filter: drop-shadow(0px 5px 0px rgba(0, 0, 0, 0.6));
+    background-image: var(--tarantino-hover);
 }
 

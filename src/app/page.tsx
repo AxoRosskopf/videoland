@@ -7,18 +7,21 @@ import useAnimation from "@/hooks/use-animation";
 
 
 export default function Home() {
-const tarantinoRef = useRef<HTMLDivElement>(null);
-  const { frames, loading } = useFrames('Seller');
-  const tarantinoRefHook = useAnimation(frames || {
-    WIDTH: 0,
-    HEIGHT: 0,
-    FRAMES_COUNT: 0,
-    FRAMES_DATA: []
-  });
-
+  const [hover, setHover] = useState(true);
+  const { frames : sellerFrames } = useFrames('Seller', hover);
+  const { frames : checkinFrames } = useFrames('CheckIn');
+  const tarantinoRef = useAnimation(sellerFrames)
   return (
     <div className={styles.page}>
-      <span ref={tarantinoRefHook} className={styles.tarantino} />
+      <span ref={tarantinoRef} className={styles.tarantino} />
+      <span 
+        style={{
+          backgroundImage: `url(${checkinFrames?.PASIVE.FRAMES_DATA[0]})`,
+          width: `${checkinFrames?.PASIVE.WIDTH}px`,
+          height: `${checkinFrames?.PASIVE.HEIGHT}px`
+        }} 
+        className={styles.frame}
+      />
     </div>
   );
 }
