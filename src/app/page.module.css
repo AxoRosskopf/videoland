@@ -1,0 +1,14 @@
+.page{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: var(--foreground);
+}
+
+.tarantino {
+    background-image: var(--tarantino);
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
