@@ -1,0 +1,30 @@
+.input{
+    background-color: transparent;
+    border: none;
+    color: white;
+    width: 40vw;
+    font: inherit;
+    font-size: 1.4rem;
+}
+
+.input:focus{
+    outline: none;
+}
+
+.inputBox{
+    --border: #262626;
+    background-color: #171717;
+    padding: 0.5rem;
+    position: relative;
+    display: inline-block;
+    box-shadow: 
+    -8px 0 0 -4px var(--border), 
+     8px 0 0 -4px var(--border), 
+     0 -8px 0 -4px var(--border), 
+     0  8px 0 -4px var(--border),
+    -4px 0 0 0px var(--border),
+     4px 0 0 0px var(--border),
+     0 -4px 0 0px var(--border),
+     0  4px 0 0px var(--border);
+    margin: 4px;
+}

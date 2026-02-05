@@ -1,0 +1,15 @@
+.previousButton, .nextButton {
+  background-color: transparent;
+  border: none;
+  image-rendering: pixelated;
+  transition: all 0.1s ease-in;
+}
+
+.nextButton:hover, .previousButton:hover {
+    filter: drop-shadow(0px 5px 0px rgba(0, 0, 0, 0.6));
+    filter: saturate(1.2);
+}
+
+.previousButton{
+    transform: scaleX(-1);
+}
