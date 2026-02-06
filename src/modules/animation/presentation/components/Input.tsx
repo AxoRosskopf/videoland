@@ -3,9 +3,10 @@ import styles from './input.module.css';
 
 type InputProps = {
   action: Dispatch<SetStateAction<string | null>>;
+  actionLoading: Dispatch<SetStateAction<boolean>>;
 };
 
-const Input = ({ action }: InputProps) => {
+const Input = ({ action, actionLoading }: InputProps) => {
   return (
     <div className={styles.inputBox}>
       <input
@@ -16,6 +17,7 @@ const Input = ({ action }: InputProps) => {
           if (e.key === 'Enter') {
             const value = e.currentTarget.value.trim();
             action(value === '' ? null : value);
+            actionLoading(true);
             e.currentTarget.value = '';
           }
         }}

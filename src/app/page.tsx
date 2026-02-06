@@ -10,17 +10,19 @@ import SellerCheckIn from "@/modules/animation/presentation/components/Molecules
 
 export default function Home() {
   const [title, setTitle] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+
   return (
     <div className={styles.page}>
       <div className={styles.movies}>
-        {title === null ? null : <Movies title={title} />}
+        {title === null ? null : <Movies title={title} actionLoading={setLoading} />}
       </div>
-      <SellerCheckIn />
+      <SellerCheckIn loading={loading} />
       <div className={styles.billboard}>
         <Billboard />
       </div>
       <div className={styles.input}>
-        <Input action={setTitle} />
+        <Input action={setTitle} actionLoading={setLoading} />
       </div>
     </div>
   );

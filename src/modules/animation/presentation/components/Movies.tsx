@@ -1,10 +1,10 @@
-import { useEffect, useState } from 'react'
+import { Dispatch, SetStateAction, useEffect, useState } from 'react'
 import { useFetchData } from '../hooks/useFetchData'
 import MovieItem from './MovieItem'
 import useFetchSprite from '../hooks/use-fetch-sprite'
 import styles from './movies.module.css'
 
-const Movies = ({ title }: { title: string | null }) => {
+const Movies = ({ title, actionLoading }: { title: string | null, actionLoading: Dispatch<SetStateAction<boolean>> }) => {
   if (!title) return null
   const[actualPage, setActualPage] = useState(0)
   const[totalPages, setTotalPages] = useState(0)
@@ -23,6 +23,10 @@ const Movies = ({ title }: { title: string | null }) => {
     setPages(newPages)
     setActualPage(0)
     setTotalPages(Math.floor(filterData.length / 5));
+    const timer = setTimeout(() => {
+        actionLoading(false)
+    }, 1000);
+    return () => clearTimeout(timer);
   },[data])  
 
   if(pages.length === 0 ){

@@ -1,84 +1,79 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useMemo, useRef, useState } from 'react'
 import { pixelit} from '../../../../lib/pixelit'
 import styles from './movie-item.module.css'
 import ReactDOM from 'react-dom'; 
 
 const MovieItem = ({ movie }: any) => {
-  if (!movie || !movie.poster_path) {
-    return null;
-  }
   const [pos,setPos] = useState({x:0, y:0}) 
   const [visible, setVisible] = useState(false);
-
-  const [imgHeight, setImgHeight] = useState<number | null>(null)
-  const imgRef = useRef<HTMLImageElement | null>(null)
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
 
-  useEffect(() => {
-    const img = imgRef.current
+  const imageUrl = useMemo(() =>
+    movie?.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}?cors=true` : ''
+  ,[movie?.poster_path])
+
+  const triggerPixelit = (img : HTMLImageElement) => {
     const canvas = canvasRef.current
-    if (!img || !canvas) return
+    if(!img || !canvas || img.naturalWidth === 0) return
 
-    const applyPixelify = () => {
-      const px = new pixelit({
-        from: img,
-        to: canvas,
-        scale: 14,
-        maxWidth: 150,
-        maxHeight: 225
-      })
-      px.draw().pixelate()
+    const height = img.naturalHeight * (150 / img.naturalWidth)
+    canvas.style.height = `${height}px`
+    const px = new pixelit({
+      from: img,
+      to: canvas,
+      scale: 14,
+      maxWidth: 150,
+      maxHeight: height
+    })
+
+    px.draw().pixelate()
+  }
+
+  const setImgRef = useCallback((node : HTMLImageElement) =>{
+    if(node){
+      if(node.complete){
+        triggerPixelit(node)
+      }
     }
-
-    img.onload = applyPixelify
-    img.onerror = () => console.error("Failed to load image:", img.src)
-
-    if (img.complete && img.naturalWidth !== 0) {
-      applyPixelify()
-    }
-
-    return () => {
-      img.onload = null
-      img.onerror = null
-    }
-  }, [movie.poster_path])
+  }, [])
 
   const handleMouseMove = (e: React.MouseEvent) => {
-    setPos({
-      x: e.clientX,
-      y: e.clientY
-    })
+    if(visible){
+      setPos({
+        x: e.clientX,
+        y: e.clientY
+      })
+    }
   }
-  console.log({movie})
-  const imageUrl = `https://image.tmdb.org/t/p/w500${movie.poster_path}?t=${Date.now()}`;
+
+  if(!movie || !movie.poster_path) return null;
+
   return (
     <div 
         className={styles.movie}
         style={{
-            height: `${imgHeight}px`,
+            width: `150px`,
             cursor: 'pointer'
         }}
         onMouseMove={handleMouseMove}
         onMouseEnter={() => setVisible(true)}
         onMouseLeave={() => setVisible(false)}
     >
-      <img
-        ref={imgRef}
-        src={imageUrl}
-        alt={movie.original_name}
-        crossOrigin="anonymous" 
-        width={150}
-        style={{ display: 'none' }}
-        onLoad={(e) =>{
-            const img = e.currentTarget
-            setImgHeight(img.naturalHeight * (150 / img.naturalWidth))
-        }}
-      />
       <>{visible &&
         <BasicInfo pos={pos} title={movie.title} year={movie.release_date?.slice(0, 4) || ''} />
       }
       </>
-      <canvas ref={canvasRef} style={{ width: '150px', imageRendering: 'pixelated' }} />
+      <img
+        ref={setImgRef}
+        src={imageUrl}
+        alt={movie.original_name}
+        crossOrigin="anonymous"
+        referrerPolicy="no-referrer" 
+        width={150}
+        style={{ display: 'none' }}
+        onLoad={(e) => {triggerPixelit(e.currentTarget)}}
+      />
+      <canvas ref={canvasRef} width={150} style={{ width: '150px', imageRendering: 'pixelated', display: 'block' }} />
     </div>
   )
 }
@@ -86,7 +81,6 @@ export default MovieItem
 
 
 const BasicInfo = ({pos, title, year}: {pos: {x: number, y: number}, title: string, year: string}) =>{
-    console.log(title, year);
     const content = (
         <div
             style={{

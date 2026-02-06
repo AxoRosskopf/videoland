@@ -15,6 +15,14 @@ const Seller = ({ animationStatus = 'idle' }) => {
     }
   });
 
+  const { spriteDecorated : sellerThink } = useAddDecorator({
+    baseSprite: sellerIdle,
+    config: {
+        nameFrameAdded: 'thinking',
+        fileName: 'SellerThink'
+    }
+  })
+
   const animationCollection = useMemo(() => ({
     "idle": {
       sprite: sellerIdle,
@@ -25,8 +33,14 @@ const Seller = ({ animationStatus = 'idle' }) => {
       sprite: sellerHover,
       interval: 300,
       cssVar: '--tarantino'
+    },
+    "thinking": {
+      sprite: sellerThink,
+      interval: 250,
+      cssVar: '--tarantino'
     }
-  }), [sellerIdle, sellerHover]);
+  }), [sellerIdle, sellerHover, sellerThink]);
+  
   const {objectRef , setAnimation} = useAnimationController(animationCollection); 
   useEffect(() => {
     if (animationStatus) {
