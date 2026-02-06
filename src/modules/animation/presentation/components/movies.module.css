@@ -3,6 +3,9 @@
   border: none;
   image-rendering: pixelated;
   transition: all 0.1s ease-in;
+  width: fit-content;
+  height: fit-content;
+  cursor: pointer;
 }
 
 .nextButton:hover, .previousButton:hover {

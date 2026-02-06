@@ -1,0 +1,24 @@
+.container {
+    position: absolute;
+    top: 70%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    
+    display: grid; 
+    place-items: center; 
+    width: fit-content;
+}
+
+.front {
+    grid-area: 1 / 1;
+    z-index: 2;       
+    position: relative;
+}
+
+.back {
+    grid-area: 1 / 1; 
+    z-index: 1;       
+    position: relative;
+    
+    transform: translateY(-60px); 
+}

@@ -23,16 +23,24 @@ const useAnimationController = ( animationCollection : Record<string, Animation>
     useEffect(()=>{
         const picked = animationCollection[actual]; 
         if(!objectRef.current || !picked || !picked.sprite) return;
-        let frameIndex = 0;
-        const totalFrames = picked.sprite.getFramesCount();
+
         objectRef.current.style.width = `${picked.sprite.getWidth()}px`;
         objectRef.current.style.height = `${picked.sprite.getHeight()}px`;
-        const intervalId = setInterval(() => {
-            const frameData = picked.sprite?.getFramesData()[frameIndex];
-            objectRef.current?.style.setProperty(picked.cssVar, `url(${frameData})`);
 
+        let frameIndex = 0;
+        const totalFrames = picked.sprite.getFramesCount();
+
+        const drawFrame = () => {
+            const frameData = picked.sprite?.getFramesData()[frameIndex];
+            if (frameData) {
+                 objectRef.current?.style.setProperty(picked.cssVar, `url(${frameData})`);
+            }
             frameIndex = (frameIndex + 1) % totalFrames;
-        }, picked.interval);
+        };
+
+        drawFrame();
+
+        const intervalId = setInterval(drawFrame, picked.interval);
 
         return () => {
             clearInterval(intervalId);

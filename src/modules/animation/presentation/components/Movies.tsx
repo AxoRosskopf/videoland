@@ -16,6 +16,7 @@ const Movies = ({ title }: { title: string | null }) => {
     if(!data) return;
     const newPages = [] 
     const filterData = data.results.filter((movie: any) => movie.poster_path !== null) 
+    filterData.sort((a: any, b: any) => b.popularity - a.popularity);
     for(let i = 0; i < filterData.length; i+=5){
       newPages.push(filterData.slice(i, i + 5))
     }
@@ -24,7 +25,7 @@ const Movies = ({ title }: { title: string | null }) => {
     setTotalPages(Math.floor(filterData.length / 5));
   },[data])  
 
-  if(pages[0]?.length === 0){
+  if(pages.length === 0 ){
     console.log({data, pages})
     return <div
       style={{
@@ -54,7 +55,8 @@ const Movies = ({ title }: { title: string | null }) => {
       style={{
         display: 'flex',
         flexDirection: 'row',
-        gap: '2rem'
+        gap: '2rem',
+        alignItems: 'center',
       }}
     >
       <button
@@ -76,7 +78,8 @@ const Movies = ({ title }: { title: string | null }) => {
       <div style={{
           display: 'flex',
           flexDirection: 'row',
-          gap: '2rem'
+          gap: '2.5rem',
+          alignItems: 'center',
       }}>
         {pages[actualPage]?.map(movie => (
           <MovieItem key={movie.id} movie={movie} />
