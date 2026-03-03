@@ -1,12 +1,12 @@
 'use client';
-import Seller from "@/modules/animation/presentation/components/Seller";
-import CheckIn from "@/modules/animation/presentation/components/CheckIn";
+import Seller from "../modules/animation/presentation/components/Seller";
+import CheckIn from "../modules/animation/presentation/components/CheckIn";
 import styles from "./page.module.css";
-import Billboard from "@/modules/animation/presentation/components/Billboard";
-import Input from "@/modules/animation/presentation/components/Input";
-import Movies from "@/modules/animation/presentation/components/Movies";
+import Billboard from "../modules/animation/presentation/components/Billboard";
+import Input from "../modules/animation/presentation/components/Input";
+import Movies from "../modules/animation/presentation/components/Movies";
 import { useState } from "react";
-import SellerCheckIn from "@/modules/animation/presentation/components/Molecules/SellerCheckIn";
+import SellerCheckIn from "../modules/animation/presentation/components/Molecules/SellerCheckIn";
 
 export default function Home() {
   const [title, setTitle] = useState<string | null>(null);

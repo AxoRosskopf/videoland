@@ -29,8 +29,7 @@ const Movies = ({ title, actionLoading }: { title: string | null, actionLoading:
     return () => clearTimeout(timer);
   },[data])  
 
-  if(pages.length === 0 ){
-    console.log({data, pages})
+  if(pages.length === 0 ){ // Possible race condition
     return <div
       style={{
         color: 'white',
@@ -64,6 +63,7 @@ const Movies = ({ title, actionLoading }: { title: string | null, actionLoading:
       }}
     >
       <button
+
         onClick={handlerPreviousPage}
         className={styles.previousButton}
         style={{

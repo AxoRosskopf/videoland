@@ -1,7 +1,7 @@
 import { ISprite } from "../../domain/ISprite";
 import { ObjectSprite } from "../../domain/ObjectSprite"
 
-function renderToPNG(data: string, width: number, height: number){
+function renderToWEBP(data: string, width: number, height: number){
     if (typeof window === 'undefined') return '';
   
     const canvas = document.createElement('canvas');
@@ -19,7 +19,7 @@ function renderToPNG(data: string, width: number, height: number){
     const imageData = ctx.createImageData(width, height);
     imageData.data.set(bytes);
     ctx.putImageData(imageData, 0, 0);
-    return canvas.toDataURL("image/png");
+    return canvas.toDataURL("image/webp");
 }
 
 export async function fetchSprite( fileName: string ): Promise<ISprite> {
@@ -34,7 +34,7 @@ export async function fetchSprite( fileName: string ): Promise<ISprite> {
             data.WIDTH,
             data.HEIGHT,
             data.FRAMES_COUNT,
-            data.FRAMES_DATA.map((frameData: string) => renderToPNG(frameData, data.WIDTH, data.HEIGHT))
+            data.FRAMES_DATA.map((frameData: string) => renderToWEBP(frameData, data.WIDTH, data.HEIGHT))
         );
 
     } catch (error) {

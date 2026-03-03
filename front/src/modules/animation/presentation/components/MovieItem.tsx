@@ -49,6 +49,7 @@ const MovieItem = ({ movie }: any) => {
   if(!movie || !movie.poster_path) return null;
 
   return (
+    <a href={`https://vidsrc-embed.ru/embed/movie/${movie.id}`}>
     <div 
         className={styles.movie}
         style={{
@@ -56,7 +57,10 @@ const MovieItem = ({ movie }: any) => {
             cursor: 'pointer'
         }}
         onMouseMove={handleMouseMove}
-        onMouseEnter={() => setVisible(true)}
+        onMouseEnter={(e) =>{
+          setPos({ x: e.clientX, y: e.clientY });
+          setVisible(true)
+        }}
         onMouseLeave={() => setVisible(false)}
     >
       <>{visible &&
@@ -75,6 +79,7 @@ const MovieItem = ({ movie }: any) => {
       />
       <canvas ref={canvasRef} width={150} style={{ width: '150px', imageRendering: 'pixelated', display: 'block' }} />
     </div>
+    </a>
   )
 }
 export default MovieItem

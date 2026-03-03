@@ -1,4 +1,4 @@
-import { process_sprite } from "@/modules/animation/infrastructure/server/FileSystemSprite";
+import { process_sprite } from "../../../modules/animation/infrastructure/server/FileSystemSprite";
 import { NextResponse } from "next/server";
 
 import path from "path";
