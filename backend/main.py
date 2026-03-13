@@ -5,9 +5,11 @@ from shared.db import get_session
 from shared.models import Movie
 from transformers import pipeline
 
+
+
 pipe = pipeline(
     "text-generation",
-    model="Qwen/Qwen2.5-1.5B-Instruct",
+    model="Qwen/Qwen2.5-0.5B-Instruct",
     device="mps",
 )
 
@@ -22,15 +24,18 @@ class ThoughtsDTO(BaseModel):
 def generate_hypothetical_plot(input: str):
     messages = [
         {
-            "role": "user",
+            "role": "system",
             "content": (
-                f"You are a movie recommendation assistant. A user said: \"{input}\"\n\n"
-                "Your task:\n"
-                "1. If the user describes a mood, feeling, or situation (e.g. sad, bored, heartbreak), infer what kind of movie would suit them.\n"
-                "2. If the user describes a movie concept or genre directly, use that.\n"
-                "3. Write a short hypothetical movie plot (under 130 words) that represents the ideal movie for this user.\n\n"
-                "Rules: raw plain text only, no markdown, no explanations, just the plot."
+                "You are a movie recommendation assistant. "
+                "When given a user message, write a short hypothetical movie plot (under 130 words) that represents the ideal movie for that user. "
+                "If the user describes a mood, feeling, or situation, infer what kind of movie would suit them. "
+                "If the user describes a concept or genre directly, use that. "
+                "Output raw plain text only: no markdown, no explanations, no preamble. Just the plot."
             )
+        },
+        {
+            "role": "user",
+            "content": input
         }
     ]
     result = pipe(messages, max_new_tokens=180)
@@ -44,9 +49,8 @@ def search_similar_movies(
     db = db_session or get_session()
     created_locally = db_session is None
     try:
-        similar_movies = db.query(Movie).order_by(
-            Movie.plot_vector.cosine_distance(plot_vector)
-        ).limit(limit).all()
+        distance = Movie.plot_vector.cosine_distance(plot_vector).label("distance")
+        similar_movies = db.query(Movie, distance).order_by(distance).limit(limit).all()
         return similar_movies
     finally:
         if created_locally:
@@ -60,25 +64,34 @@ async def gen_recommendations(user_thoughts: ThoughtsDTO):
 
     print("[2/4] Generando plot hipotetico con LLM...")
     hypothesis = generate_hypothetical_plot(user_thoughts.text)
-    print(f"      Plot: {hypothesis[:100]}...")
+
+    print(f"      Plot: {hypothesis}")
 
     print("[3/4] Embeddando plot y buscando en base de datos...")
     embedder = Embedder()
     vector_hypo = embedder.embed(hypothesis)[0].tolist()
     movies = search_similar_movies(plot_vector=vector_hypo, limit=20)
     print(f"      {len(movies)} peliculas encontradas")
-
+    
     recommendations = [
         {
             "id": movie.id,
             "title": movie.title,
             "plot": movie.plot,
-            "release_date": movie.release_date
+            "release_date": movie.release_date,
+            "score": round(1 - distance, 4),
         }
-        for movie in movies
+        for movie, distance in movies
     ]
 
-    print(f"[4/4] Devolviendo recomendaciones: {[m['title'] for m in recommendations]}\n")
+    scores = [r["score"] for r in recommendations]
+    average_score = round(sum(scores) / len(scores), 4) if scores else 0
+    variance = round(sum((s - average_score) ** 2 for s in scores) / len(scores), 4) if scores else 0
+
+    print(f"[4/4] Devolviendo recomendaciones || Avg: {average_score}, Var: {variance}")
     return {
-        "recommendations": recommendations
+        "gen_hypothesis": hypothesis,
+        "recommendations": recommendations,
+        "average": average_score,
+        "variance": variance
     }
