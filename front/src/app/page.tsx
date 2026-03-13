@@ -1,6 +1,4 @@
 'use client';
-import Seller from "../modules/animation/presentation/components/Seller";
-import CheckIn from "../modules/animation/presentation/components/CheckIn";
 import styles from "./page.module.css";
 import Billboard from "../modules/animation/presentation/components/Billboard";
 import Input from "../modules/animation/presentation/components/Input";

@@ -2,31 +2,37 @@ import { useEffect, useState } from "react";
 
 type MovieCollection = {
   id: number
-  original_name: string
+  title: string
   overview: string
   poster_path: string
 }
 
 type ApiResponse = {
-  page: number
   results: MovieCollection[]
-  total_pages: number
-  total_results: number
 }
 
-export const useFetchData = (title : string) => {
+export const useFetchData = (title: string) => {
     const [data, setData] = useState<ApiResponse | null>(null);
-    useEffect(()=>{
-        const fetchData = async() =>{
-            try{
+    const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        setData(null);
+        setLoading(true);
+        const fetchData = async () => {
+            try {
                 const res = await fetch(`/api/movies/search?query=${encodeURIComponent(title.toLowerCase())}`);
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
                 const json = await res.json();
                 setData(json);
             } catch (error) {
                 console.error("Error fetching data:", error);
+                setData({ results: [] });
+            } finally {
+                setLoading(false);
             }
-        }
+        };
         fetchData();
-    },[title])
-    return data;
+    }, [title]);
+
+    return { data, loading };
 }

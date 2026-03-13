@@ -10,12 +10,12 @@ const Movies = ({ title, actionLoading }: { title: string | null, actionLoading:
   const[totalPages, setTotalPages] = useState(0)
   const[pages, setPages] = useState<any[][]>([])
   const { sprite } = useFetchSprite('Arrow')
-  const data = useFetchData(title)
+  const { data, loading } = useFetchData(title)
 
   useEffect(()=>{
     if(!data) return;
-    const newPages = [] 
-    const filterData = data.results.filter((movie: any) => movie.poster_path !== null) 
+    const newPages = []
+    const filterData = data.results.filter((movie: any) => movie.poster_path !== null)
     filterData.sort((a: any, b: any) => b.popularity - a.popularity);
     for(let i = 0; i < filterData.length; i+=5){
       newPages.push(filterData.slice(i, i + 5))
@@ -27,9 +27,17 @@ const Movies = ({ title, actionLoading }: { title: string | null, actionLoading:
         actionLoading(false)
     }, 1000);
     return () => clearTimeout(timer);
-  },[data])  
+  },[data])
 
-  if(pages.length === 0 ){ // Possible race condition
+  useEffect(() => {
+    if (!loading && pages.length === 0 && data !== null) {
+      actionLoading(false);
+    }
+  }, [loading, pages, data]);
+
+  if(loading) return null;
+
+  if(pages.length === 0){
     return <div
       style={{
         color: 'white',

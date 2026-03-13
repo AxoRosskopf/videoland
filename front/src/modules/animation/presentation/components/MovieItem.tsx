@@ -70,7 +70,7 @@ const MovieItem = ({ movie }: any) => {
       <img
         ref={setImgRef}
         src={imageUrl}
-        alt={movie.original_name}
+        alt={movie.title}
         crossOrigin="anonymous"
         referrerPolicy="no-referrer" 
         width={150}
