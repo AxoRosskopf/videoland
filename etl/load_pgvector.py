@@ -2,11 +2,10 @@ from shared.db import get_session
 from shared.models import Movie
 
 def save_movie(
-        tconst: str,
         title: str,
         plot: str,
-        release_date: str,
         plot_vector: list[float],
+        release_date: str = None,
         db_session=None
     ):
     db = db_session or get_session()
@@ -14,11 +13,10 @@ def save_movie(
 
     try:
         movie = Movie(
-            tconst=tconst,
             title=title,
             plot=plot,
-            release_date=release_date,
-            plot_vector=plot_vector
+            plot_vector=plot_vector,
+            release_date=release_date
         )
         db.add(movie)
         db.commit()

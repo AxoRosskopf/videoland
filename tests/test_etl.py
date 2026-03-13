@@ -9,7 +9,7 @@ def test_etl_instantiation_success():
     run_etl("tests/data_test/etl_instantiation_test.csv", save_fn=mock_save)
     assert mock_save.call_count > 0
     args, kwargs = mock_save.call_args
-    expected_keys = ["tconst", "title", "plot", "release_date", "plot_vector"]
+    expected_keys = [ "title", "plot", "plot_vector"]
     for key in expected_keys:
         assert key in kwargs
 
